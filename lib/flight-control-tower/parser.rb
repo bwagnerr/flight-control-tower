@@ -2,10 +2,17 @@ require 'json'
 
 module FlightControlTower
   class Parser
-    def self.parse files_to_parse
-      results = {}
-      files_to_parse.each do |f|
 
+    def self.parse files_to_parse
+      connections = create_connections(files_to_parse)
+      puts create_graph(connections).to_json
+    end
+
+    private
+    def create_connections(files_to_parse)
+      results = {}
+      results['document'] = { outbound: [], inbound: [] }
+      files_to_parse.each do |f|
         content = File.read(f)
         next unless content.match(/defineComponent/)
 
@@ -20,21 +27,23 @@ module FlightControlTower
 
         outbound = content.scan(/this.trigger\((.+?)\)/).map{|e| e[0].split(',').map(&:strip) }
         outbound.each do |args|
-          args.shift if args[0] == 'document'
-          results[component_name][:outbound] << args.shift
+          results['document'][:outbound] << args[1] if args[0] == 'document'
+          results[component_name][:outbound] << args[1]
         end
         results[component_name][:inbound].uniq!
         results[component_name][:outbound].uniq!
-
       end
+      results
+    end
 
+    def create_grap(results)
       graph = []
       results.each_pair do |component_name, component_events|
         component_events[:inbound].each do |event|
           results.each_pair do |next_component_name, next_component_events|
             next if component_name == next_component_name
             if results[next_component_name][:outbound].include?(event)
-              graph << { source: next_component_name, dest: component_name, type: event }
+              graph << { source: next_component_name, target: component_name, eventName: event }
             end
           end
         end
@@ -50,9 +59,8 @@ module FlightControlTower
           end
         end
       end
-  
-      puts graph.to_json
-
+      return graph
     end
   end
-end
+end 
+ 
