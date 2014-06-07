@@ -4,12 +4,11 @@ module FlightControlTower
   class Parser
 
     def self.parse files_to_parse
-      connections = create_connections(files_to_parse)
-      puts create_graph(connections).to_json
+      create_graph(create_connections(files_to_parse)).to_json
     end
 
     private
-    def create_connections(files_to_parse)
+    def self.create_connections(files_to_parse)
       results = {}
       results['document'] = { outbound: [], inbound: [] }
       files_to_parse.each do |f|
@@ -36,7 +35,7 @@ module FlightControlTower
       results
     end
 
-    def create_grap(results)
+    def self.create_graph(results)
       graph = []
       results.each_pair do |component_name, component_events|
         component_events[:inbound].each do |event|
