@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = "flight-control-tower"
-  s.version     = "0.0.1"
+  s.version     = "0.0.2"
   s.summary     = "Plot your flightjs components and its events interactions"
   s.date        = "2014-06-04"
   s.description = "This gem parses your flight components and stores their event interactions to later plot it using d3"
