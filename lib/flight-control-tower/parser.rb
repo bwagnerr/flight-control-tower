@@ -25,7 +25,7 @@ module FlightControlTower
           results[component_name][:inbound] << args[1] if args.length == 3
         end
 
-        outbound = content.scan(/this.trigger\((.+?)\)/).map{|e| e[0].split(',').map(&:strip) }
+        outbound = content.scan(/\.trigger\((.+?)\)/).map{|e| e[0].split(',').map(&:strip) }
         outbound.each do |args|
           args.shift if args[0] == 'document' 
           results[component_name][:outbound] << args.first
