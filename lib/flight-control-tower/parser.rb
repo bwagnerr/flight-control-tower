@@ -20,14 +20,15 @@ module FlightControlTower
 
         inbound = content.scan(/this.on\((.+?)\)/).map{|e| e[0].split(',').map(&:strip) }
         inbound.each do |args|
+          next if args.include?('click')
           results[component_name][:inbound] << args[0] if args.length == 2
           results[component_name][:inbound] << args[1] if args.length == 3
         end
 
         outbound = content.scan(/this.trigger\((.+?)\)/).map{|e| e[0].split(',').map(&:strip) }
         outbound.each do |args|
-          results['document'][:outbound] << args[1] if args[0] == 'document'
-          results[component_name][:outbound] << args[1]
+          args.shift if args[0] == 'document' 
+          results[component_name][:outbound] << args.first
         end
         results[component_name][:inbound].uniq!
         results[component_name][:outbound].uniq!
@@ -53,7 +54,7 @@ module FlightControlTower
           results.each_pair do |next_component_name, next_component_events|
             next if component_name == next_component_name
             if results[next_component_name][:inbound].include?(event)
-              graph << { source: component_name, dest: next_component_name, type: event }
+              graph << { source: component_name, target: next_component_name, eventName: event }
             end
           end
         end
