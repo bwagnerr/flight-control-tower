@@ -38,10 +38,16 @@ text {
   text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
 }
 
+#container {
+  height: 800px;
+  overflow-y: scroll;
+}
+
         </style>
     </head>
 
     <body>
+      <div id="container"></div>
       <script>
 var callMap = <%= @graph %>;
 var nodes = {};
@@ -67,20 +73,20 @@ callMap.forEach(function(call) {
   });
 });
 
-var width = window.innerWidth,
-    height = window.innerHeight;
+var width = 1200,
+    height = 1000;
 
 var force = d3.layout.force()
     .nodes(d3.values(nodes))
     .links(links)
     .size([width, height])
-    .linkDistance(100)
-    .linkStrength(0.1)
-    .charge(-600)
+    .linkDistance(200)
+    .linkStrength(0.05)
+    .charge(-700)
     .on("tick", tick)
     .start();
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#container").append("svg")
     .attr("width", width)
     .attr("height", height);
 
@@ -107,7 +113,7 @@ var path = svg.append("g").selectAll("path")
 var circle = svg.append("g").selectAll("circle")
     .data(force.nodes())
   .enter().append("circle")
-    .attr("r", 6)
+    .attr("r", 8)
     .attr('class', function(d) { return d.type; })
     .call(force.drag);
 
@@ -117,6 +123,7 @@ var text = svg.append("g").selectAll("text.component")
     .attr("x", 8)
     .attr("y", ".31em")
     .attr("class", "component")
+    .style("font-size","13px")
     .text(function(d) { return d.name; });
 
 // Use elliptical arc path segments to doubly-encode directionality.
@@ -140,4 +147,5 @@ function transform(d) {
     </body>
 
 </html>
+
 
